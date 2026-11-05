@@ -1,0 +1,19 @@
+syntax = "proto3";
+package tnv.control;
+option cc_generic_services = true;
+enum Code { OK=0; INVALID_ARGUMENT=1; NOT_FOUND=2; NO_ACTIVE_STORAGE=3; BUSY=4; INTERNAL_ERROR=5; }
+message Node { string node_id=1; string group_name=2; string data_ip=3; uint32 data_port=4; bool active=5; string version=6; int64 startup_unix_seconds=7; }
+message RegisterRequest { string node_id=1; string group_name=2; string data_ip=3; uint32 data_port=4; string version=5; int64 startup_unix_seconds=6; }
+message HeartbeatRequest { string node_id=1; string group_name=2; }
+message Status { Code code=1; string message=2; }
+message NodesRequest { string appid=1; string userid=2; string fileid=3; }
+message NodesResponse { Code code=1; string message=2; string group_name=3; repeated Node nodes=4; }
+message GroupsRequest {}
+message Group { string group_name=1; repeated Node nodes=2; }
+message GroupsResponse { Code code=1; string message=2; repeated Group groups=3; }
+service TrackerControlService {
+ rpc RegisterStorage(RegisterRequest) returns (Status);
+ rpc Heartbeat(HeartbeatRequest) returns (Status);
+ rpc GetStorageNodes(NodesRequest) returns (NodesResponse);
+ rpc ListGroups(GroupsRequest) returns (GroupsResponse);
+}
